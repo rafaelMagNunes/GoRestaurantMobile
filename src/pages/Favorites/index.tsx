@@ -27,16 +27,42 @@ interface Food {
   formattedPrice: string;
 }
 
+interface Favorite {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  category: number;
+  image_url: string;
+  thumbnail_url: string;
+}
+
 const Favorites: React.FC = () => {
   const [favorites, setFavorites] = useState<Food[]>([]);
 
   useEffect(() => {
     async function loadFavorites(): Promise<void> {
-      // Load favorite foods from api
+      const response = await api.get<Favorite[]>('/orders');
+      const favoritessArray: Food[] = [];
+
+      const { data } = response;
+
+      data.forEach(iten => {
+        favoritessArray.push({
+          id: iten.id,
+          name: iten.name,
+          description: iten.description,
+          price: iten.price,
+          formattedPrice: formatValue(iten.price),
+          thumbnail_url: iten.thumbnail_url,
+        });
+      });
+
+      setFavorites(favoritessArray);
     }
 
     loadFavorites();
-  }, []);
+  }, [setFavorites]);
 
   return (
     <Container>
